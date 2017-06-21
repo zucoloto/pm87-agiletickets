@@ -14,10 +14,11 @@ import org.joda.time.LocalTime;
 
 import br.com.caelum.agiletickets.domain.Agenda;
 import br.com.caelum.agiletickets.domain.DiretorioDeEstabelecimentos;
-import br.com.caelum.agiletickets.domain.precos.CalculadoraDePrecos;
+import br.com.caelum.agiletickets.domain.precos.CalculadorDePreco;
 import br.com.caelum.agiletickets.models.Espetaculo;
 import br.com.caelum.agiletickets.models.Periodicidade;
 import br.com.caelum.agiletickets.models.Sessao;
+import br.com.caelum.agiletickets.models.TipoDeEspetaculo;
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
@@ -134,7 +135,10 @@ public class EspetaculosController {
 		// em caso de erro, redireciona para a lista de sessao
 		validator.onErrorRedirectTo(this).sessao(sessao.getId());
 
-		BigDecimal precoTotal = CalculadoraDePrecos.calcula(sessao, quantidade);
+		TipoDeEspetaculo tipoDeEspetaculo = sessao.getEspetaculo().getTipo();
+		CalculadorDePreco calculadoraDePrecos = tipoDeEspetaculo.obterCalculo();
+		
+		BigDecimal precoTotal = calculadoraDePrecos.calcula(sessao, quantidade);
 
 		sessao.reserva(quantidade);
 

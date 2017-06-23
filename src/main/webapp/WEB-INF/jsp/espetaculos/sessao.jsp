@@ -37,7 +37,7 @@
 		</p>
 	
 		<p>
-			<span class="label">Ingressos disponíveis:</span>
+			<span class="label test_ingresso_disponivel">Ingressos disponíveis:</span>
 			${sessao.ingressosDisponiveis}
 		</p>
 		

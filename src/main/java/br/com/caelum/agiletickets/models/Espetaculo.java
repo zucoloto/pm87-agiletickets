@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -130,28 +131,34 @@ public class Espetaculo {
 			LocalTime horario, Periodicidade periodicidade) {
 
 		if (inicio.isAfter(fim)) {
-			throw new IllegalArgumentException("Data início não pode ser maior que o fim");
-		} 
-		
-		Sessao sessao = new Sessao();
-		
-		if (periodicidade.equals(Periodicidade.DIARIA)) {
-			int diferencaDeDias = Days.daysBetween(inicio, fim).getDays();
-			for (int i = 0; i <= diferencaDeDias; i++) {
-				sessao.setEspetaculo(this);
-				sessao.setInicio(inicio.plusDays(i).toDateTime(horario));
-				sessoes.add(sessao);
+			throw new IllegalArgumentException(
+					"Data início não pode ser maior que o fim");
+		} else {
+			Sessao sessao = new Sessao();
+
+			if (periodicidade.equals(Periodicidade.DIARIA)) {
+				int diferencaDeDias = Days.daysBetween(inicio, fim).getDays();
+				for (int i = 0; i <= diferencaDeDias; i++) {
+					sessao.setEspetaculo(this);
+					DateTime dataDaSessao = inicio.plusDays(i).toDateTime(horario);
+					//System.out.println(dataDaSessao);
+					sessao.setInicio(dataDaSessao);
+					sessoes.add(sessao);
+				}
+			} else if (periodicidade.equals(Periodicidade.SEMANAL)) {
+				int diferencaDeSemana = Weeks.weeksBetween(inicio, fim)
+						.getWeeks();
+				for (int i = 0; i <= diferencaDeSemana; i++) {
+					sessao.setEspetaculo(this);
+					DateTime dataDaSessao = inicio.plusWeeks(i).toDateTime(horario);
+					sessao.setInicio(dataDaSessao);
+					sessoes.add(sessao);
+				}
 			}
-		} else if (periodicidade.equals(Periodicidade.SEMANAL)) {
-			int diferencaDeSemana = Weeks.weeksBetween(inicio, fim).getWeeks();
-			for (int i = 0; i <= diferencaDeSemana; i++) {
-				sessao.setEspetaculo(this);
-				sessao.setInicio(inicio.plusWeeks(i).toDateTime(horario));
-				sessoes.add(sessao);
-			}
+
+			return sessoes;
 		}
 
-		return sessoes;
 	}
 
 }
